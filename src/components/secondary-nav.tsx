@@ -13,18 +13,15 @@ export function SecondaryNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="animate-in fade-in slide-in-from-bottom-2 border-blue/30 bg-blue/10 shadow-blue/10 mx-auto mt-6 flex w-3/4 items-center justify-between rounded-full border px-3 py-2 shadow-lg backdrop-blur-xl duration-700">
+    <nav className="animate-in fade-in slide-in-from-bottom-2 border-blue/30 bg-blue/10 mx-auto mt-6 grid w-3/4 grid-cols-3 rounded-full border px-2 py-2 shadow-lg backdrop-blur-xl duration-700">
       {links.map((link, i) => {
         const active = pathname === link.href;
         return (
-          <div key={link.href} className="flex flex-1 items-center justify-center">
-            {i > 0 && <span className="mr-2 h-4 w-px bg-white/40 sm:mr-4" />}
+          <div key={link.href} className={`flex items-center justify-center py-1 ${i > 0 ? "border-l border-white/60" : ""}`}>
             <Link
               href={link.href}
-              className={`rounded-full px-4 py-1.5 text-center text-sm font-medium transition-colors ${
-                active
-                  ? "bg-white/35 text-foreground shadow-[0_1px_6px_rgba(255,255,255,0.5)]"
-                  : "bg-white/15 text-foreground/80 hover:bg-white/25"
+              className={`rounded-full px-5 py-2 text-center text-sm font-semibold shadow-[0_0_16px_rgba(255,255,255,0.6)] transition-colors ${
+                active ? "bg-white/50 text-foreground" : "bg-white/25 text-foreground/90 hover:bg-white/40"
               }`}
             >
               {link.label}
