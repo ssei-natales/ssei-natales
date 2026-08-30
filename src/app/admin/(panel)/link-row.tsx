@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { deleteLink, updateLink } from "./actions";
 
-type Link = { id: string; titulo: string; url: string; categoria: string };
+type Link = { id: string; titulo: string; url: string };
 
 export function LinkRow({ link }: { link: Link }) {
   const [editing, setEditing] = useState(false);
@@ -29,7 +29,6 @@ export function LinkRow({ link }: { link: Link }) {
           >
             <Input name="titulo" defaultValue={link.titulo} required className="sm:flex-1" />
             <Input name="url" type="url" defaultValue={link.url} required className="sm:flex-1" />
-            <input type="hidden" name="categoria" value={link.categoria} />
             <div className="flex gap-2">
               <Button type="submit" size="sm" disabled={pending}>
                 Guardar
