@@ -16,6 +16,7 @@ export function AddLinkForm({ subcategoriaId }: { subcategoriaId: string }) {
   return (
     <form ref={formRef} action={formAction} className="flex flex-col gap-2 sm:flex-row sm:items-center">
       <input type="hidden" name="subcategoria_id" value={subcategoriaId} />
+      <Input name="grupo" placeholder="Grupo (opcional, ej. Rescate 1)" className="sm:w-48" />
       <Input name="titulo" required placeholder="Título del botón" className="sm:flex-1" />
       <Input name="url" type="url" required placeholder="https://…" className="sm:flex-1" />
       <Button type="submit" size="sm" disabled={pending}>

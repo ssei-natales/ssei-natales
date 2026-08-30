@@ -61,10 +61,11 @@ function parseLinkFields(formData: FormData) {
   const subcategoriaId = String(formData.get("subcategoria_id") ?? "");
   const titulo = String(formData.get("titulo") ?? "").trim();
   const url = String(formData.get("url") ?? "").trim();
+  const grupo = String(formData.get("grupo") ?? "").trim();
 
   if (!subcategoriaId) return { error: "Falta la subcategoría." };
   if (!titulo || !url) return { error: "Título y link son obligatorios." };
-  return { subcategoria_id: subcategoriaId, titulo, url };
+  return { subcategoria_id: subcategoriaId, titulo, url, grupo: grupo || null };
 }
 
 export async function createLink(

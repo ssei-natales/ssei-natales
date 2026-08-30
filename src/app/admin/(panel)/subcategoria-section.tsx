@@ -7,7 +7,7 @@ import { deleteSubcategoria } from "./actions";
 import { AddLinkForm } from "./add-link-form";
 import { LinkRow } from "./link-row";
 
-type Link = { id: string; titulo: string; url: string };
+type Link = { id: string; titulo: string; url: string; grupo: string | null };
 type Subcategoria = { id: string; nombre: string };
 
 export function SubcategoriaSection({ subcategoria, links }: { subcategoria: Subcategoria; links: Link[] }) {

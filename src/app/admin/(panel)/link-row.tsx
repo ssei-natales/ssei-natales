@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { deleteLink, updateLink } from "./actions";
 
-type Link = { id: string; titulo: string; url: string };
+type Link = { id: string; titulo: string; url: string; grupo: string | null };
 
 export function LinkRow({ link }: { link: Link }) {
   const [editing, setEditing] = useState(false);
@@ -27,6 +27,7 @@ export function LinkRow({ link }: { link: Link }) {
               });
             }}
           >
+            <Input name="grupo" defaultValue={link.grupo ?? ""} placeholder="Grupo (opcional)" className="sm:w-40" />
             <Input name="titulo" defaultValue={link.titulo} required className="sm:flex-1" />
             <Input name="url" type="url" defaultValue={link.url} required className="sm:flex-1" />
             <div className="flex gap-2">
@@ -46,7 +47,10 @@ export function LinkRow({ link }: { link: Link }) {
 
   return (
     <TableRow>
-      <TableCell>{link.titulo}</TableCell>
+      <TableCell>
+        {link.grupo && <span className="mr-2 rounded-full bg-accent px-2 py-0.5 text-xs text-accent-foreground">{link.grupo}</span>}
+        {link.titulo}
+      </TableCell>
       <TableCell className="max-w-xs truncate text-muted-foreground">{link.url}</TableCell>
       <TableCell className="flex justify-end gap-2">
         <Button size="sm" variant="outline" onClick={() => setEditing(true)}>
