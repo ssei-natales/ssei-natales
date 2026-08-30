@@ -1,0 +1,67 @@
+"use client";
+
+import { useState, useTransition } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { TableCell, TableRow } from "@/components/ui/table";
+import { deleteLink, updateLink } from "./actions";
+
+type Link = { id: string; titulo: string; url: string; categoria: string };
+
+export function LinkRow({ link }: { link: Link }) {
+  const [editing, setEditing] = useState(false);
+  const [pending, startTransition] = useTransition();
+  const [error, setError] = useState<string>();
+
+  if (editing) {
+    return (
+      <TableRow>
+        <TableCell colSpan={3}>
+          <form
+            className="flex flex-col gap-2 sm:flex-row sm:items-center"
+            action={(formData) => {
+              startTransition(async () => {
+                const result = await updateLink(link.id, formData);
+                if (result?.error) setError(result.error);
+                else setEditing(false);
+              });
+            }}
+          >
+            <Input name="titulo" defaultValue={link.titulo} required className="sm:flex-1" />
+            <Input name="url" type="url" defaultValue={link.url} required className="sm:flex-1" />
+            <input type="hidden" name="categoria" value={link.categoria} />
+            <div className="flex gap-2">
+              <Button type="submit" size="sm" disabled={pending}>
+                Guardar
+              </Button>
+              <Button type="button" size="sm" variant="outline" onClick={() => setEditing(false)}>
+                Cancelar
+              </Button>
+            </div>
+          </form>
+          {error && <p className="mt-1 text-sm text-destructive">{error}</p>}
+        </TableCell>
+      </TableRow>
+    );
+  }
+
+  return (
+    <TableRow>
+      <TableCell>{link.titulo}</TableCell>
+      <TableCell className="max-w-xs truncate text-muted-foreground">{link.url}</TableCell>
+      <TableCell className="flex justify-end gap-2">
+        <Button size="sm" variant="outline" onClick={() => setEditing(true)}>
+          Editar
+        </Button>
+        <Button
+          size="sm"
+          variant="destructive"
+          disabled={pending}
+          onClick={() => startTransition(() => deleteLink(link.id))}
+        >
+          Eliminar
+        </Button>
+      </TableCell>
+    </TableRow>
+  );
+}
