@@ -6,7 +6,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 
 type ResultRow = { email: string; ok: boolean; error?: string };
 
-async function requireAdmin() {
+export async function requireAdmin() {
   const supabase = await createClient();
   const {
     data: { user },
@@ -62,4 +62,37 @@ export async function bulkCreateUsers(
 
   revalidatePath("/admin/usuarios");
   return { results };
+}
+
+export async function changeUserRole(userId: string, role: "admin" | "funcionario") {
+  const admin = await requireAdmin();
+  if (!admin) return;
+
+  const adminClient = createAdminClient();
+  await adminClient.from("profiles").update({ role }).eq("id", userId);
+  revalidatePath("/admin/usuarios");
+}
+
+export type UserRow = { id: string; email: string; role: string; createdAt: string };
+
+export async function listUsers(): Promise<UserRow[]> {
+  const admin = await requireAdmin();
+  if (!admin) return [];
+
+  const adminClient = createAdminClient();
+  const [{ data: authUsers }, { data: profiles }] = await Promise.all([
+    adminClient.auth.admin.listUsers(),
+    adminClient.from("profiles").select("id, role"),
+  ]);
+
+  const roleById = new Map((profiles ?? []).map((p) => [p.id, p.role as string]));
+
+  return (authUsers?.users ?? [])
+    .map((u) => ({
+      id: u.id,
+      email: u.email ?? "(sin correo)",
+      role: roleById.get(u.id) ?? "funcionario",
+      createdAt: u.created_at,
+    }))
+    .sort((a, b) => a.email.localeCompare(b.email));
 }
