@@ -47,9 +47,12 @@ export function SubcategoriaContent({ subcategoria, links }: { subcategoria: Sub
               ))}
             </div>
           )}
+          {sinGrupo.length > 0 && grupos.length > 0 && (
+            <div className="h-px w-full bg-gradient-to-r from-primary via-blue to-transparent" />
+          )}
           {grupos.map((grupo) => (
             <div key={grupo}>
-              <h2 className="mb-3 text-sm font-medium text-muted-foreground">{grupo}</h2>
+              {grupos.length > 1 && <h2 className="mb-3 text-sm font-medium text-muted-foreground">{grupo}</h2>}
               <div className="grid gap-3 sm:grid-cols-2">
                 {links
                   .filter((l) => l.grupo === grupo)
