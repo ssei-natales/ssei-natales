@@ -17,7 +17,10 @@ function parseLinkFields(formData: FormData) {
   return { categoria, titulo, url };
 }
 
-export async function createLink(_prevState: { error?: string } | undefined, formData: FormData) {
+export async function createLink(
+  _prevState: { error?: string } | undefined,
+  formData: FormData,
+): Promise<{ error?: string }> {
   const fields = parseLinkFields(formData);
   if ("error" in fields) return fields;
 
@@ -34,7 +37,7 @@ export async function createLink(_prevState: { error?: string } | undefined, for
   return {};
 }
 
-export async function updateLink(id: string, formData: FormData) {
+export async function updateLink(id: string, formData: FormData): Promise<{ error?: string }> {
   const fields = parseLinkFields(formData);
   if ("error" in fields) return fields;
 
