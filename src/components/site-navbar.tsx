@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronDown, ShieldCheck } from "lucide-react";
+import { ChevronDown, ShieldCheck, UserRound } from "lucide-react";
 import type { Subcategoria } from "@/lib/data/subcategorias";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Logo } from "@/components/logo";
@@ -136,6 +136,9 @@ export function SiteNavbar({
                 </Button>
               )}
               <div className="ml-2 flex items-center gap-1 border-l border-border/60 pl-2">
+                <Button variant="ghost" size="icon" aria-label="Mi cuenta" render={<Link href="/cuenta" />} nativeButton={false}>
+                  <UserRound className="size-4" />
+                </Button>
                 <form action={signOut}>
                   <Button type="submit" variant="ghost" size="sm">
                     Salir
