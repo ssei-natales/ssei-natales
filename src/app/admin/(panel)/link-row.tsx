@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { ArrowDown, ArrowUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { TableCell, TableRow } from "@/components/ui/table";
-import { deleteLink, updateLink } from "./actions";
+import { deleteLink, moveLink, updateLink } from "./actions";
 
 type Link = { id: string; titulo: string; url: string; grupo: string | null };
 
@@ -52,7 +53,25 @@ export function LinkRow({ link }: { link: Link }) {
         {link.titulo}
       </TableCell>
       <TableCell className="max-w-xs truncate text-muted-foreground">{link.url}</TableCell>
-      <TableCell className="flex justify-end gap-2">
+      <TableCell className="flex justify-end gap-1">
+        <Button
+          size="icon-sm"
+          variant="ghost"
+          aria-label="Subir"
+          disabled={pending}
+          onClick={() => startTransition(() => moveLink(link.id, "up"))}
+        >
+          <ArrowUp className="size-3.5" />
+        </Button>
+        <Button
+          size="icon-sm"
+          variant="ghost"
+          aria-label="Bajar"
+          disabled={pending}
+          onClick={() => startTransition(() => moveLink(link.id, "down"))}
+        >
+          <ArrowDown className="size-3.5" />
+        </Button>
         <Button size="sm" variant="outline" onClick={() => setEditing(true)}>
           Editar
         </Button>

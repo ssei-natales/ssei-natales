@@ -105,3 +105,26 @@ export async function deleteLink(id: string) {
   await supabase.from("links").delete().eq("id", id);
   revalidatePath("/admin");
 }
+
+export async function moveLink(id: string, direction: "up" | "down") {
+  const supabase = await createClient();
+
+  const { data: link } = await supabase.from("links").select("id, subcategoria_id, grupo, orden").eq("id", id).single();
+  if (!link) return;
+
+  let query = supabase.from("links").select("id, orden").eq("subcategoria_id", link.subcategoria_id);
+  query = link.grupo ? query.eq("grupo", link.grupo) : query.is("grupo", null);
+  query =
+    direction === "up"
+      ? query.lt("orden", link.orden).order("orden", { ascending: false })
+      : query.gt("orden", link.orden).order("orden", { ascending: true });
+
+  const { data: neighbors } = await query.limit(1);
+  const neighbor = neighbors?.[0];
+  if (!neighbor) return;
+
+  await supabase.from("links").update({ orden: neighbor.orden }).eq("id", link.id);
+  await supabase.from("links").update({ orden: link.orden }).eq("id", neighbor.id);
+
+  revalidatePath("/admin");
+}
