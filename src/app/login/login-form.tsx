@@ -6,11 +6,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { signIn } from "./actions";
 
-export function LoginForm() {
+export function LoginForm({ redirectTo }: { redirectTo: string }) {
   const [state, formAction, pending] = useActionState(signIn, undefined);
 
   return (
     <form action={formAction} className="space-y-4">
+      <input type="hidden" name="redirectTo" value={redirectTo} />
+
       <div className="space-y-1.5">
         <Label htmlFor="email">Correo</Label>
         <Input id="email" name="email" type="email" autoComplete="email" required />

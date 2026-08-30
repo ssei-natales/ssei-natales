@@ -3,10 +3,12 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, ShieldCheck } from "lucide-react";
 import type { Subcategoria } from "@/lib/data/subcategorias";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Logo } from "@/components/logo";
+import { Button } from "@/components/ui/button";
+import { signOut } from "@/app/login/actions";
 
 function NavDropdown({
   titulo,
@@ -67,7 +69,15 @@ function NavDropdown({
   );
 }
 
-export function SiteNavbar({ subcategorias }: { subcategorias: Subcategoria[] }) {
+export function SiteNavbar({
+  subcategorias,
+  isAuthenticated,
+  isAdmin,
+}: {
+  subcategorias: Subcategoria[];
+  isAuthenticated: boolean;
+  isAdmin: boolean;
+}) {
   const cartillas = subcategorias.filter((s) => s.tipo === "cartilla");
   const documentos = subcategorias.filter((s) => s.tipo === "documento");
   const [openGroup, setOpenGroup] = useState<string | null>(null);
@@ -95,11 +105,33 @@ export function SiteNavbar({ subcategorias }: { subcategorias: Subcategoria[] })
         </Link>
 
         <nav className="flex items-center gap-1">
-          <NavDropdown titulo="Cartillas" basePath="/cartillas" items={cartillas} openGroup={openGroup} setOpenGroup={setOpenGroup} />
-          <NavDropdown titulo="Documentos" basePath="/documentos" items={documentos} openGroup={openGroup} setOpenGroup={setOpenGroup} />
-          <div className="ml-2 border-l border-border/60 pl-2">
-            <ThemeToggle />
-          </div>
+          {isAuthenticated ? (
+            <>
+              <NavDropdown titulo="Cartillas" basePath="/cartillas" items={cartillas} openGroup={openGroup} setOpenGroup={setOpenGroup} />
+              <NavDropdown titulo="Documentos" basePath="/documentos" items={documentos} openGroup={openGroup} setOpenGroup={setOpenGroup} />
+              {isAdmin && (
+                <Button variant="ghost" size="sm" className="ml-1 gap-1.5" render={<Link href="/admin" />} nativeButton={false}>
+                  <ShieldCheck className="size-3.5" />
+                  Admin
+                </Button>
+              )}
+              <div className="ml-2 flex items-center gap-1 border-l border-border/60 pl-2">
+                <form action={signOut}>
+                  <Button type="submit" variant="ghost" size="sm">
+                    Salir
+                  </Button>
+                </form>
+                <ThemeToggle />
+              </div>
+            </>
+          ) : (
+            <div className="flex items-center gap-1">
+              <Button size="sm" render={<Link href="/login" />} nativeButton={false}>
+                Ingresar
+              </Button>
+              <ThemeToggle />
+            </div>
+          )}
         </nav>
       </div>
     </header>
