@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { deleteLink, moveLink, updateLink } from "./actions";
 
-type Link = { id: string; titulo: string; url: string; grupo: string | null };
+type Link = { id: string; titulo: string; url: string; grupo: string | null; es_embed: boolean };
 
 export function LinkRow({ link }: { link: Link }) {
   const [editing, setEditing] = useState(false);
@@ -19,7 +19,7 @@ export function LinkRow({ link }: { link: Link }) {
       <TableRow>
         <TableCell colSpan={3}>
           <form
-            className="flex flex-col gap-2 sm:flex-row sm:items-center"
+            className="flex flex-col gap-2"
             action={(formData) => {
               startTransition(async () => {
                 const result = await updateLink(link.id, formData);
@@ -28,17 +28,23 @@ export function LinkRow({ link }: { link: Link }) {
               });
             }}
           >
-            <Input name="grupo" defaultValue={link.grupo ?? ""} placeholder="Grupo (opcional)" className="sm:w-40" />
-            <Input name="titulo" defaultValue={link.titulo} required className="sm:flex-1" />
-            <Input name="url" type="url" defaultValue={link.url} required className="sm:flex-1" />
-            <div className="flex gap-2">
-              <Button type="submit" size="sm" disabled={pending}>
-                Guardar
-              </Button>
-              <Button type="button" size="sm" variant="outline" onClick={() => setEditing(false)}>
-                Cancelar
-              </Button>
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+              <Input name="grupo" defaultValue={link.grupo ?? ""} placeholder="Grupo (opcional)" className="sm:w-40" />
+              <Input name="titulo" defaultValue={link.titulo} required className="sm:flex-1" />
+              <Input name="url" type="url" defaultValue={link.url} required className="sm:flex-1" />
+              <div className="flex gap-2">
+                <Button type="submit" size="sm" disabled={pending}>
+                  Guardar
+                </Button>
+                <Button type="button" size="sm" variant="outline" onClick={() => setEditing(false)}>
+                  Cancelar
+                </Button>
+              </div>
             </div>
+            <label className="flex items-center gap-2 text-xs text-muted-foreground">
+              <input type="checkbox" name="es_embed" defaultChecked={link.es_embed} className="size-3.5" />
+              Mostrar como carpeta embebida en vivo
+            </label>
           </form>
           {error && <p className="mt-1 text-sm text-destructive">{error}</p>}
         </TableCell>

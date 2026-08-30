@@ -57,25 +57,16 @@ export async function deleteSubcategoria(id: string) {
   revalidatePath("/admin");
 }
 
-export async function updateSubcategoriaEmbed(id: string, formData: FormData) {
-  const embedUrl = String(formData.get("embed_url") ?? "").trim();
-  const supabase = await createClient();
-  await supabase
-    .from("subcategorias")
-    .update({ embed_url: embedUrl || null })
-    .eq("id", id);
-  revalidatePath("/admin");
-}
-
 function parseLinkFields(formData: FormData) {
   const subcategoriaId = String(formData.get("subcategoria_id") ?? "");
   const titulo = String(formData.get("titulo") ?? "").trim();
   const url = String(formData.get("url") ?? "").trim();
   const grupo = String(formData.get("grupo") ?? "").trim();
+  const esEmbed = formData.get("es_embed") === "on";
 
   if (!subcategoriaId) return { error: "Falta la subcategoría." };
   if (!titulo || !url) return { error: "Título y link son obligatorios." };
-  return { subcategoria_id: subcategoriaId, titulo, url, grupo: grupo || null };
+  return { subcategoria_id: subcategoriaId, titulo, url, grupo: grupo || null, es_embed: esEmbed };
 }
 
 export async function createLink(

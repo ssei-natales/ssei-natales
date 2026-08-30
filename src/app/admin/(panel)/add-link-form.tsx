@@ -14,14 +14,20 @@ export function AddLinkForm({ subcategoriaId }: { subcategoriaId: string }) {
   }, undefined);
 
   return (
-    <form ref={formRef} action={formAction} className="flex flex-col gap-2 sm:flex-row sm:items-center">
-      <input type="hidden" name="subcategoria_id" value={subcategoriaId} />
-      <Input name="grupo" placeholder="Grupo (opcional, ej. Rescate 1)" className="sm:w-48" />
-      <Input name="titulo" required placeholder="Título del botón" className="sm:flex-1" />
-      <Input name="url" type="url" required placeholder="https://…" className="sm:flex-1" />
-      <Button type="submit" size="sm" disabled={pending}>
-        {pending ? "Agregando…" : "Agregar link"}
-      </Button>
+    <form ref={formRef} action={formAction} className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+        <input type="hidden" name="subcategoria_id" value={subcategoriaId} />
+        <Input name="grupo" placeholder="Grupo (opcional, ej. Rescate 1)" className="sm:w-48" />
+        <Input name="titulo" required placeholder="Título" className="sm:flex-1" />
+        <Input name="url" type="url" required placeholder="https://…" className="sm:flex-1" />
+        <Button type="submit" size="sm" disabled={pending}>
+          {pending ? "Agregando…" : "Agregar link"}
+        </Button>
+      </div>
+      <label className="flex items-center gap-2 text-xs text-muted-foreground">
+        <input type="checkbox" name="es_embed" className="size-3.5" />
+        Mostrar como carpeta embebida en vivo (en vez de un botón que abre en otra pestaña)
+      </label>
       {state?.error && <p className="text-sm text-destructive">{state.error}</p>}
     </form>
   );
