@@ -1,0 +1,36 @@
+import { ArrowUpRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import type { Link as LinkRow, Subcategoria } from "@/lib/data/subcategorias";
+
+export function SubcategoriaContent({ subcategoria, links }: { subcategoria: Subcategoria; links: LinkRow[] }) {
+  return (
+    <div className="glass glass-glow animate-in fade-in slide-in-from-bottom-2 mt-8 rounded-3xl p-8 duration-500 sm:p-10">
+      <p className="text-xs font-medium tracking-[0.3em] text-primary uppercase">
+        {subcategoria.tipo === "cartilla" ? "Cartilla" : "Documento"}
+      </p>
+      <h1 className="mt-2 font-[family-name:var(--font-brand)] text-2xl">{subcategoria.nombre}</h1>
+      <div className="mt-4 h-px w-16 bg-gradient-to-r from-primary via-blue to-transparent" />
+
+      {links.length === 0 ? (
+        <p className="mt-8 text-sm text-muted-foreground">Todavía no hay nada acá.</p>
+      ) : (
+        <div className="mt-8 grid gap-3 sm:grid-cols-2">
+          {links.map((link, i) => (
+            <Button
+              key={link.id}
+              variant="secondary"
+              size="lg"
+              className="h-auto animate-in fade-in slide-in-from-bottom-2 justify-between rounded-2xl py-4 text-left duration-500"
+              style={{ animationDelay: `${i * 60}ms`, animationFillMode: "backwards" }}
+              nativeButton={false}
+              render={<a href={link.url} target="_blank" rel="noopener noreferrer" />}
+            >
+              {link.titulo}
+              <ArrowUpRight className="size-4 shrink-0 text-muted-foreground transition-transform group-hover/button:translate-x-0.5 group-hover/button:-translate-y-0.5" />
+            </Button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
