@@ -30,6 +30,12 @@ export function SubcategoriaContent({ subcategoria, links }: { subcategoria: Sub
       <h1 className="mt-2 font-[family-name:var(--font-brand)] text-2xl">{subcategoria.nombre}</h1>
       <div className="mt-4 h-px w-16 bg-gradient-to-r from-primary via-blue to-transparent" />
 
+      {subcategoria.embed_url && (
+        <div className="mt-8 overflow-hidden rounded-2xl border border-border/60">
+          <iframe src={subcategoria.embed_url} title={subcategoria.nombre} className="h-[70vh] w-full" />
+        </div>
+      )}
+
       {links.length === 0 ? (
         <p className="mt-8 text-sm text-muted-foreground">Todavía no hay nada acá.</p>
       ) : (

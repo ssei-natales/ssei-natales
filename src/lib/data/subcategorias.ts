@@ -1,6 +1,12 @@
 import { createClient } from "@/lib/supabase/server";
 
-export type Subcategoria = { id: string; tipo: "cartilla" | "documento"; nombre: string; slug: string };
+export type Subcategoria = {
+  id: string;
+  tipo: "cartilla" | "documento";
+  nombre: string;
+  slug: string;
+  embed_url: string | null;
+};
 export type Link = { id: string; subcategoria_id: string; titulo: string; url: string; grupo: string | null };
 
 export async function getSubcategorias() {
