@@ -17,7 +17,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
   const subcategorias = user ? await getSubcategorias() : [];
 
   return (
-    <div className="bg-ambient min-h-screen">
+    <div className="bg-ambient min-h-screen overflow-x-hidden">
       <SiteNavbar subcategorias={subcategorias} isAuthenticated={!!user} isAdmin={isAdmin} />
       <main className="mx-auto max-w-5xl px-6 py-12 sm:px-8">{children}</main>
     </div>

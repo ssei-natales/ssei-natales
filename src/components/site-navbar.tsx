@@ -10,6 +10,22 @@ import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
 import { signOut } from "@/app/login/actions";
 
+function NavLink({ href, children }: { href: string; children: React.ReactNode }) {
+  const pathname = usePathname();
+  const active = pathname === href;
+
+  return (
+    <Link
+      href={href}
+      className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+        active ? "text-primary" : "text-foreground/80 hover:text-foreground"
+      }`}
+    >
+      {children}
+    </Link>
+  );
+}
+
 function NavDropdown({
   titulo,
   basePath,
@@ -107,6 +123,7 @@ export function SiteNavbar({
         <nav className="flex items-center gap-1">
           {isAuthenticated ? (
             <>
+              <NavLink href="/dashboard">Dashboard</NavLink>
               <NavDropdown titulo="Cartillas" basePath="/cartillas" items={cartillas} openGroup={openGroup} setOpenGroup={setOpenGroup} />
               <NavDropdown titulo="Documentos" basePath="/documentos" items={documentos} openGroup={openGroup} setOpenGroup={setOpenGroup} />
               {isAdmin && (
