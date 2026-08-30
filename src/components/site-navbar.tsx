@@ -10,6 +10,16 @@ import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
 import { signOut } from "@/app/login/actions";
 
+function InstagramIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}>
+      <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+      <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+    </svg>
+  );
+}
+
 function EstadoLink({ href, children }: { href: string; children: React.ReactNode }) {
   const pathname = usePathname();
   const active = pathname === href;
@@ -110,15 +120,26 @@ export function SiteNavbar({
   return (
     <header ref={navRef} className="glass glass-glow sticky top-4 z-40 mx-4 mt-4 rounded-3xl sm:mx-6 sm:mt-6">
       <div className="flex items-center justify-between gap-4 px-4 py-3 sm:px-6">
-        <Link href="/" className="flex items-center gap-3">
-          <Logo className="size-9 shrink-0" />
-          <span className="flex flex-col leading-none">
-            <span className="font-[family-name:var(--font-brand)] text-sm tracking-[0.12em]">SSEI NATALES</span>
-            <span className="mt-1 text-[0.7rem] text-muted-foreground">
-              Aeródromo Teniente Julio Gallardo · Puerto Natales
+        <div className="flex items-center gap-3">
+          <Link href="/" className="flex items-center gap-3">
+            <Logo className="size-9 shrink-0" />
+            <span className="flex flex-col leading-none">
+              <span className="font-[family-name:var(--font-brand)] text-sm tracking-[0.12em]">SSEI NATALES</span>
+              <span className="mt-1 text-[0.7rem] text-muted-foreground">
+                Aeródromo Teniente Julio Gallardo · Puerto Natales
+              </span>
             </span>
-          </span>
-        </Link>
+          </Link>
+          <a
+            href="https://www.instagram.com/ssei_natales/"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Instagram del servicio SSEI Natales"
+            className="text-muted-foreground transition-colors hover:text-primary"
+          >
+            <InstagramIcon className="size-4" />
+          </a>
+        </div>
 
         <nav className="flex items-center gap-1">
           {isAuthenticated ? (
