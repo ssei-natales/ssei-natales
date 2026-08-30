@@ -22,6 +22,15 @@ const michroma = Michroma({
 export const metadata: Metadata = {
   title: "SSEI Natales",
   description: "Servicio de Salvamento y Extinción de Incendios — Aeródromo Teniente Julio Gallardo",
+  icons: {
+    icon: [{ url: "/logo/ssei-logo.png", sizes: "500x500", type: "image/png" }],
+    apple: [{ url: "/logo/ssei-logo.png", sizes: "500x500", type: "image/png" }],
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "SSEI Natales",
+  },
 };
 
 export const viewport: Viewport = {
