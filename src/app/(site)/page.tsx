@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import { Logo } from "@/components/logo";
 import { Carousel } from "@/components/carousel";
+import { SecondaryNav } from "@/components/secondary-nav";
 
 function getCarouselImages(): string[] {
   const dir = path.join(process.cwd(), "public", "carousel");
@@ -32,6 +33,8 @@ export default function HomePage() {
           <p className="mt-6 max-w-md text-sm text-muted-foreground">Puerto Natales - Magallanes, Chile</p>
         </div>
       </div>
+
+      <SecondaryNav />
 
       <Carousel images={images} />
     </>
