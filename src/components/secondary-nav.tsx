@@ -20,8 +20,10 @@ export function SecondaryNav() {
           <div key={link.href} className={`flex items-center justify-center py-1 ${i > 0 ? "border-l border-white/60" : ""}`}>
             <Link
               href={link.href}
-              className={`rounded-full px-2.5 py-1.5 text-center text-xs font-semibold whitespace-nowrap shadow-[0_0_10px_rgba(255,255,255,0.55)] transition-colors sm:px-5 sm:py-2 sm:text-sm ${
-                active ? "bg-white/50 text-foreground" : "bg-white/25 text-foreground/90 hover:bg-white/40"
+              className={`rounded-full px-2.5 py-1.5 text-center text-xs font-semibold whitespace-nowrap shadow-sm transition-colors sm:px-5 sm:py-2 sm:text-sm ${
+                active
+                  ? "bg-white/60 text-foreground"
+                  : "bg-black/10 text-foreground/90 hover:bg-black/15 dark:bg-white/15 dark:hover:bg-white/25"
               }`}
             >
               {link.label}

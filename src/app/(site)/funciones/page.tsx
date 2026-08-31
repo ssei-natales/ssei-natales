@@ -1,10 +1,17 @@
+import Image from "next/image";
 import { ImageIcon } from "lucide-react";
 
 const FUNCIONES = [
   {
+    titulo: "Principal función del servicio SSEI",
+    texto: "Salvar vidas humanas en accidentes de aviación.",
+    imagen: "/funciones/incendio.webp",
+  },
+  {
     titulo: "Planificación de la Respuesta de Emergencia",
     texto:
       "Corresponde determinar y asignar responsabilidades, coordinando recursos humanos y logísticos con otros organismos participantes, para enfrentar emergencias que ocurran en un aeropuerto/aeródromo o en sus inmediaciones.",
+    imagen: "/funciones/planificacion.webp",
   },
   {
     titulo: "Control y Reducción del Peligro Aviario",
@@ -15,6 +22,7 @@ const FUNCIONES = [
     titulo: "Prevención y Manejo de Incidentes con Mercancías Peligrosas",
     texto:
       "En todos los aeródromos que cuenten con equipos de respuesta para el manejo y control de incidentes con mercancías peligrosas para responder a Emergencias con Materiales Peligrosos - EREMEP.",
+    imagen: "/funciones/hazmat.webp",
   },
   {
     titulo: "Traslado de Aeronaves Inutilizadas",
@@ -30,6 +38,7 @@ const FUNCIONES = [
     titulo: "Rescate en Espacios Confinados, en Altura y Vehicular",
     texto:
       "El Servicio SSEI es el responsable de aplicar los procedimientos de la intervención y aplicación de las técnicas de rescate en accidentes o incidentes vehiculares, en espacios confinados o en altura que ocurran en el aeropuerto/aeródromo.",
+    imagen: "/funciones/altura.webp",
   },
   {
     titulo: "Prevención de Riesgos y Protección de Incendios Aeroportuarios",
@@ -39,10 +48,12 @@ const FUNCIONES = [
     titulo: "Mantención Operativa del Estado de las Superficies",
     texto:
       "El Servicio SSEI es el responsable de aplicar los procedimientos relativos a estas materias, Efectuar la medición de eficacia de frenado, a requerimiento de los servicios de tránsito aéreo.",
+    imagen: "/funciones/superficie.webp",
   },
   {
     titulo: "Supervisión del Área de Movimientos",
     texto: "El Servicio SSEI es el responsable de efectuar las labores de supervisión del área de movimiento de acuerdo a los procedimientos establecidos.",
+    imagen: "/funciones/supervision.webp",
   },
   {
     titulo: "Mantenimiento de Vehículos y Equipos Nivel I",
@@ -79,12 +90,18 @@ export default function FuncionesPage() {
               }`}
               style={{ animationDelay: `${i * 60}ms`, animationFillMode: "backwards" }}
             >
-              <div className="flex aspect-video shrink-0 items-center justify-center rounded-2xl border border-dashed border-border bg-muted/40 sm:w-72">
-                <div className="flex flex-col items-center gap-2 text-muted-foreground">
-                  <ImageIcon className="size-6" />
-                  <span className="text-xs">Foto próximamente</span>
+              {f.imagen ? (
+                <div className="relative aspect-video w-full shrink-0 overflow-hidden rounded-2xl sm:w-72">
+                  <Image src={f.imagen} alt={f.titulo} fill className="object-cover" sizes="(min-width: 640px) 18rem, 100vw" />
                 </div>
-              </div>
+              ) : (
+                <div className="flex aspect-video shrink-0 items-center justify-center rounded-2xl border border-dashed border-border bg-muted/40 sm:w-72">
+                  <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                    <ImageIcon className="size-6" />
+                    <span className="text-xs">Foto próximamente</span>
+                  </div>
+                </div>
+              )}
               <div>
                 <h2 className="font-[family-name:var(--font-brand)] text-lg uppercase">{f.titulo}</h2>
                 <p className="mt-3 text-sm text-muted-foreground">{f.texto}</p>
