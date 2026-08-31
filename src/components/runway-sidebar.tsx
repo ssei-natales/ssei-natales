@@ -53,10 +53,10 @@ export function RunwaySidebar() {
       <div className="absolute left-0 w-full transition-transform duration-150 ease-out" style={{ transform: `translateY(${translateY}px)` }}>
         <Image
           ref={runwayRef}
-          src="/Barra_lateral/pista-completa-v2.webp"
+          src="/Barra_lateral/pista-completa-v3.webp"
           alt=""
-          width={220}
-          height={3756}
+          width={300}
+          height={4185}
           sizes="128px"
           className="h-auto w-full opacity-90"
           priority

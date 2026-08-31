@@ -7,6 +7,7 @@ import { FuncionesContent } from "@/components/funciones-content";
 import { SobreNosotrosContent } from "@/components/sobre-nosotros-content";
 import { ProximamentePanel } from "@/components/proximamente-panel";
 import { RunwaySidebar } from "@/components/runway-sidebar";
+import { FarewellCharacter } from "@/components/farewell-character";
 
 function getCarouselImages(): string[] {
   const dir = path.join(process.cwd(), "public", "carousel");
@@ -28,9 +29,13 @@ export default function HomePage() {
     <>
       <SecondaryNav />
       <RunwaySidebar />
+      <FarewellCharacter />
 
       <div className="relative left-1/2 -mb-12 w-screen -translate-x-1/2">
-        <div id="home-scroll" className="h-[calc(100dvh-var(--chrome-h))] snap-y snap-proximity overflow-y-auto scroll-smooth">
+        <div
+          id="home-scroll"
+          className="h-[calc(100dvh-var(--chrome-h))] snap-y snap-proximity overflow-x-hidden overflow-y-auto scroll-smooth"
+        >
           <section id="inicio" className="flex min-h-full w-full snap-start flex-col items-center justify-center gap-4 px-6 py-6">
             <div className="glass glass-glow animate-in fade-in slide-in-from-bottom-4 flex w-full max-w-5xl flex-col items-start gap-4 rounded-3xl p-5 duration-700 sm:flex-row sm:items-center sm:p-6">
               <Logo className="size-14 shrink-0 sm:size-16" />

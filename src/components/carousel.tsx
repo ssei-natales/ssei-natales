@@ -1,65 +1,173 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
+
+const GAP = 12; // px, coincide con el gap del track
 
 export function Carousel({ images }: { images: string[] }) {
-  const [index, setIndex] = useState(0);
+  const hasPeeks = images.length > 1;
+  // Se clona la última imagen antes de la primera y la primera después de
+  // la última, así el track puede seguir girando "hacia adelante" al llegar
+  // al final en vez de devolverse visualmente hasta el principio.
+  const extended = hasPeeks ? [images[images.length - 1], ...images, images[0]] : images;
+
+  const [trackIndex, setTrackIndex] = useState(hasPeeks ? 1 : 0);
+  const [animate, setAnimate] = useState(true);
+  const [offset, setOffset] = useState(0);
+  const viewportRef = useRef<HTMLDivElement>(null);
+  const slideRef = useRef<HTMLDivElement>(null);
+  // Bloquea nuevos movimientos mientras uno está en curso (transición o el
+  // "salto" sin animación al hacer el loop), para que clics rápidos o el
+  // autoplay no se crucen con una transición a medio terminar.
+  const movingRef = useRef(false);
+  // Cuenta regresiva del autoplay: se reinicia cada vez que hay un
+  // movimiento (manual o automático), así nunca se encima con un clic
+  // reciente y produce un "doble salto".
+  const autoplayRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const index = hasPeeks ? (trackIndex - 1 + images.length) % images.length : 0;
+
+  function scheduleAutoplay() {
+    if (!hasPeeks) return;
+    if (autoplayRef.current) clearTimeout(autoplayRef.current);
+    autoplayRef.current = setTimeout(() => {
+      if (!movingRef.current) {
+        movingRef.current = true;
+        setTrackIndex((i) => i + 1);
+        window.setTimeout(settle, 600);
+      }
+      scheduleAutoplay();
+    }, 6000);
+  }
 
   useEffect(() => {
-    if (images.length <= 1) return;
-    const timer = setInterval(() => setIndex((i) => (i + 1) % images.length), 6000);
-    return () => clearInterval(timer);
-  }, [images.length]);
+    scheduleAutoplay();
+    return () => {
+      if (autoplayRef.current) clearTimeout(autoplayRef.current);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasPeeks]);
+
+  useEffect(() => {
+    function measure() {
+      const viewport = viewportRef.current;
+      const slide = slideRef.current;
+      if (!viewport || !slide) return;
+      const vw = viewport.clientWidth;
+      const sw = slide.offsetWidth;
+      setOffset((vw - sw) / 2 - trackIndex * (sw + GAP));
+    }
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, [trackIndex]);
 
   if (images.length === 0) return null;
 
-  const prev = () => setIndex((i) => (i - 1 + images.length) % images.length);
-  const next = () => setIndex((i) => (i + 1) % images.length);
+  function settle() {
+    // Se llama tanto desde onTransitionEnd como desde un timeout de
+    // respaldo (por si la transición no llega a disparar el evento, p.ej.
+    // con la pestaña en segundo plano) — el guard evita procesarla dos veces.
+    if (!hasPeeks || !movingRef.current) return;
+    setTrackIndex((i) => {
+      if (i === extended.length - 1) {
+        setAnimate(false);
+        requestAnimationFrame(() => setAnimate(true));
+        movingRef.current = false;
+        return 1;
+      }
+      if (i === 0) {
+        setAnimate(false);
+        requestAnimationFrame(() => setAnimate(true));
+        movingRef.current = false;
+        return extended.length - 2;
+      }
+      movingRef.current = false;
+      return i;
+    });
+  }
+
+  function move(updater: (i: number) => number) {
+    if (movingRef.current) return;
+    movingRef.current = true;
+    setTrackIndex(updater);
+    window.setTimeout(settle, 600);
+    scheduleAutoplay();
+  }
+
+  function prev() {
+    move((i) => i - 1);
+  }
+
+  function next() {
+    move((i) => i + 1);
+  }
+
+  function goTo(target: number) {
+    if (movingRef.current || target === index) return;
+    move(() => target + 1);
+  }
 
   return (
-    <div className="glass glass-glow animate-in fade-in slide-in-from-bottom-4 overflow-hidden rounded-3xl duration-700">
-      <div className="relative aspect-[64/27] w-full sm:aspect-[28/9]">
-        {images.map((src, i) => (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            key={src}
-            src={src}
-            alt=""
-            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ${
-              i === index ? "opacity-100" : "opacity-0"
-            }`}
-          />
-        ))}
+    <div className="animate-in fade-in slide-in-from-bottom-4 relative w-full overflow-hidden duration-700 md:left-1/2 md:w-screen md:-translate-x-1/2">
+      <div
+        ref={viewportRef}
+        className="relative mx-auto w-full max-w-[calc(64rem+9.5rem)] overflow-hidden"
+        style={{
+          maskImage: "linear-gradient(to right, transparent, black 48px, black calc(100% - 48px), transparent)",
+          WebkitMaskImage: "linear-gradient(to right, transparent, black 48px, black calc(100% - 48px), transparent)",
+        }}
+      >
+        <div
+          onTransitionEnd={settle}
+          className={`flex items-stretch ${animate ? "transition-transform duration-500 ease-in-out" : ""}`}
+          style={{ transform: `translateX(${offset}px)`, gap: GAP }}
+        >
+          {extended.map((src, i) => (
+            <div
+              key={`${src}-${i}`}
+              ref={i === 0 ? slideRef : undefined}
+              className="glass glass-glow relative aspect-[64/27] w-full max-w-5xl shrink-0 overflow-hidden rounded-3xl sm:aspect-[28/9]"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={src}
+                alt=""
+                className={`h-full w-full object-cover transition-[filter,opacity] duration-500 ${
+                  i - 1 === index ? "" : "opacity-80 blur-[0.5px]"
+                }`}
+              />
+              {i - 1 !== index && <div className="absolute inset-0 bg-background/20" />}
+            </div>
+          ))}
+        </div>
 
-        {images.length > 1 && (
+        {hasPeeks && (
           <>
-            <Button
-              variant="ghost"
-              size="icon"
+            <button
+              type="button"
               aria-label="Anterior"
               onClick={prev}
-              className="glass absolute top-1/2 left-3 -translate-y-1/2 rounded-full"
+              className="glass absolute top-1/2 left-3 z-10 flex h-16 w-9 -translate-y-1/2 items-center justify-center rounded-2xl transition-colors hover:bg-white/20 sm:h-24 sm:w-11"
             >
-              <ChevronLeft className="size-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
+              <ChevronLeft className="size-5" />
+            </button>
+            <button
+              type="button"
               aria-label="Siguiente"
               onClick={next}
-              className="glass absolute top-1/2 right-3 -translate-y-1/2 rounded-full"
+              className="glass absolute top-1/2 right-3 z-10 flex h-16 w-9 -translate-y-1/2 items-center justify-center rounded-2xl transition-colors hover:bg-white/20 sm:h-24 sm:w-11"
             >
-              <ChevronRight className="size-4" />
-            </Button>
-            <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-1.5">
-              {images.map((src, i) => (
+              <ChevronRight className="size-5" />
+            </button>
+            <div className="absolute bottom-3 left-1/2 z-10 flex -translate-x-1/2 gap-1.5">
+              {images.map((dotSrc, di) => (
                 <button
-                  key={src}
-                  aria-label={`Ir a la foto ${i + 1}`}
-                  onClick={() => setIndex(i)}
-                  className={`size-1.5 rounded-full transition-all ${i === index ? "w-4 bg-primary" : "bg-white/60"}`}
+                  key={dotSrc}
+                  aria-label={`Ir a la foto ${di + 1}`}
+                  onClick={() => goTo(di)}
+                  className={`size-1.5 rounded-full transition-all ${di === index ? "w-4 bg-primary" : "bg-white/60"}`}
                 />
               ))}
             </div>
