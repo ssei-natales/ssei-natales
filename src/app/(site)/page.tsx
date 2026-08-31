@@ -6,6 +6,7 @@ import { SecondaryNav } from "@/components/secondary-nav";
 import { FuncionesContent } from "@/components/funciones-content";
 import { SobreNosotrosContent } from "@/components/sobre-nosotros-content";
 import { ProximamentePanel } from "@/components/proximamente-panel";
+import { RunwaySidebar } from "@/components/runway-sidebar";
 
 function getCarouselImages(): string[] {
   const dir = path.join(process.cwd(), "public", "carousel");
@@ -26,9 +27,10 @@ export default function HomePage() {
   return (
     <>
       <SecondaryNav />
+      <RunwaySidebar />
 
       <div className="relative left-1/2 -mb-12 w-screen -translate-x-1/2">
-        <div className="h-[calc(100dvh-var(--chrome-h))] snap-y snap-proximity overflow-y-auto scroll-smooth">
+        <div id="home-scroll" className="h-[calc(100dvh-var(--chrome-h))] snap-y snap-proximity overflow-y-auto scroll-smooth">
           <section id="inicio" className="flex min-h-full w-full snap-start flex-col items-center justify-center gap-4 px-6 py-6">
             <div className="glass glass-glow animate-in fade-in slide-in-from-bottom-4 flex w-full max-w-5xl flex-col items-start gap-4 rounded-3xl p-5 duration-700 sm:flex-row sm:items-center sm:p-6">
               <Logo className="size-14 shrink-0 sm:size-16" />
@@ -47,7 +49,10 @@ export default function HomePage() {
             </div>
           </section>
 
-          <section id="sobre-nosotros" className="flex h-full w-full snap-start items-center justify-center overflow-hidden px-6 py-4">
+          <section
+            id="sobre-nosotros"
+            className="flex min-h-full w-full snap-start items-center justify-center overflow-y-auto px-6 py-4 lg:h-full lg:overflow-hidden"
+          >
             <SobreNosotrosContent />
           </section>
 
@@ -57,7 +62,10 @@ export default function HomePage() {
             </div>
           </section>
 
-          <section id="contacto" className="flex h-full w-full snap-start items-center justify-center overflow-hidden px-6 py-8">
+          <section
+            id="contacto"
+            className="flex min-h-full w-full snap-start items-center justify-center overflow-y-auto px-6 py-8 lg:h-full lg:overflow-hidden"
+          >
             <ProximamentePanel titulo="Contacto" />
           </section>
         </div>
