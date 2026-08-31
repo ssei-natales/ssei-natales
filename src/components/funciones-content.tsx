@@ -48,7 +48,7 @@ const FUNCIONES = [
     titulo: "Mantención Operativa del Estado de las Superficies",
     texto:
       "El Servicio SSEI es el responsable de aplicar los procedimientos relativos a estas materias, Efectuar la medición de eficacia de frenado, a requerimiento de los servicios de tránsito aéreo.",
-    imagen: "/funciones/superficie.webp",
+    imagen: "/funciones/superficie-v2.webp",
   },
   {
     titulo: "Supervisión del Área de Movimientos",
@@ -72,9 +72,9 @@ const FUNCIONES = [
   },
 ];
 
-export default function FuncionesPage() {
+export function FuncionesContent() {
   return (
-    <div className="glass glass-glow animate-in fade-in slide-in-from-bottom-2 mt-8 rounded-3xl p-8 duration-500 sm:p-10">
+    <div className="glass glass-glow animate-in fade-in slide-in-from-bottom-2 rounded-3xl p-8 duration-500 sm:p-10">
       <p className="text-xs font-medium tracking-[0.3em] text-primary uppercase">Servicio SSEI</p>
       <h1 className="mt-2 font-[family-name:var(--font-brand)] text-3xl">Funciones</h1>
       <div className="mt-4 h-px w-24 bg-gradient-to-r from-primary via-blue to-transparent" />
@@ -92,7 +92,13 @@ export default function FuncionesPage() {
             >
               {f.imagen ? (
                 <div className="relative aspect-video w-full shrink-0 overflow-hidden rounded-2xl sm:w-72">
-                  <Image src={f.imagen} alt={f.titulo} fill className="object-cover" sizes="(min-width: 640px) 18rem, 100vw" />
+                  <Image
+                    src={f.imagen}
+                    alt={f.titulo}
+                    fill
+                    className="object-cover object-bottom"
+                    sizes="(min-width: 640px) 18rem, 100vw"
+                  />
                 </div>
               ) : (
                 <div className="flex aspect-video shrink-0 items-center justify-center rounded-2xl border border-dashed border-border bg-muted/40 sm:w-72">

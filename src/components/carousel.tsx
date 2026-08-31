@@ -19,8 +19,8 @@ export function Carousel({ images }: { images: string[] }) {
   const next = () => setIndex((i) => (i + 1) % images.length);
 
   return (
-    <div className="glass glass-glow animate-in fade-in slide-in-from-bottom-4 mt-6 overflow-hidden rounded-3xl duration-700">
-      <div className="relative aspect-video w-full sm:aspect-[21/9]">
+    <div className="glass glass-glow animate-in fade-in slide-in-from-bottom-4 overflow-hidden rounded-3xl duration-700">
+      <div className="relative aspect-[64/27] w-full sm:aspect-[28/9]">
         {images.map((src, i) => (
           // eslint-disable-next-line @next/next/no-img-element
           <img

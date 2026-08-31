@@ -53,6 +53,7 @@
 /* Azul marino / negro / blanco / dorado — misma estructura de tokens en
    ambos temas para que el liquid glass tenga contraste correcto en los dos. */
 :root {
+  --chrome-h: 12rem;
   --background: oklch(0.98 0.006 250);
   --foreground: oklch(0.17 0.03 258);
   --card: oklch(1 0 0);
@@ -95,6 +96,7 @@
 
   --neu-light: oklch(1 0 0 / 70%);
   --neu-dark: oklch(0.2 0.04 258 / 22%);
+  --neu-dark-hover: oklch(0.2 0.04 258 / 38%);
 }
 
 .dark {
@@ -139,6 +141,7 @@
 
   --neu-light: oklch(1 0 0 / 9%);
   --neu-dark: oklch(0 0 0 / 55%);
+  --neu-dark-hover: oklch(0 0 0 / 75%);
 }
 
 @layer base {
@@ -177,6 +180,24 @@
     box-shadow:
       3px 3px 7px var(--neu-dark),
       -3px -3px 7px var(--neu-light);
+    transition:
+      box-shadow 0.2s ease,
+      transform 0.2s ease,
+      background-color 0.2s ease;
+  }
+
+  .neu-raised:hover {
+    box-shadow:
+      5px 5px 12px var(--neu-dark-hover),
+      -5px -5px 12px var(--neu-light);
+    transform: translateY(-1px);
+  }
+
+  .neu-raised:active {
+    box-shadow:
+      inset 2px 2px 5px var(--neu-dark),
+      inset -2px -2px 5px var(--neu-light);
+    transform: translateY(0);
   }
 
   .neu-pressed {
