@@ -92,6 +92,9 @@
   --glass-border: oklch(0.17 0.03 258 / 8%);
   --glow-blue: oklch(0.55 0.16 258 / 35%);
   --glow-gold: oklch(0.75 0.15 80 / 30%);
+
+  --neu-light: oklch(1 0 0 / 70%);
+  --neu-dark: oklch(0.2 0.04 258 / 22%);
 }
 
 .dark {
@@ -133,6 +136,9 @@
   --glass-border: oklch(1 0 0 / 12%);
   --glow-blue: oklch(0.5 0.16 258 / 45%);
   --glow-gold: oklch(0.7 0.15 80 / 25%);
+
+  --neu-light: oklch(1 0 0 / 9%);
+  --neu-dark: oklch(0 0 0 / 55%);
 }
 
 @layer base {
@@ -165,5 +171,17 @@
     background:
       radial-gradient(ellipse 60% 45% at 12% -8%, var(--glow-blue), transparent 60%),
       radial-gradient(ellipse 50% 40% at 100% 0%, var(--glow-gold), transparent 60%);
+  }
+
+  .neu-raised {
+    box-shadow:
+      3px 3px 7px var(--neu-dark),
+      -3px -3px 7px var(--neu-light);
+  }
+
+  .neu-pressed {
+    box-shadow:
+      inset 2px 2px 5px var(--neu-dark),
+      inset -2px -2px 5px var(--neu-light);
   }
 }
