@@ -68,7 +68,7 @@ function NavDropdown({
       </button>
 
       <div
-        className={`glass glass-glow absolute top-full left-1/2 z-50 mt-2 w-72 -translate-x-1/2 rounded-2xl p-2 transition-all duration-200 ${
+        className={`glass-menu glass-glow absolute top-full left-1/2 z-50 mt-2 w-72 -translate-x-1/2 rounded-2xl p-2 transition-all duration-200 ${
           open ? "translate-y-0 opacity-100" : "pointer-events-none -translate-y-1 opacity-0"
         }`}
       >
@@ -169,7 +169,7 @@ function MobileMenu({
       </Button>
 
       <div
-        className={`glass glass-glow absolute inset-x-4 top-full z-50 mt-2 max-h-[70vh] overflow-y-auto rounded-2xl p-3 transition-all duration-200 sm:inset-x-6 ${
+        className={`glass-menu glass-glow absolute inset-x-4 top-full z-50 mt-2 max-h-[70vh] overflow-y-auto rounded-2xl p-3 transition-all duration-200 sm:inset-x-6 ${
           open ? "translate-y-0 opacity-100" : "pointer-events-none -translate-y-1 opacity-0"
         }`}
       >
