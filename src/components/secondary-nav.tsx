@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 
 const links = [
   { href: "inicio", label: "Inicio" },
+  { href: "galeria", label: "Galería" },
   { href: "sobre-nosotros", label: "Sobre nosotros" },
   { href: "funciones", label: "Funciones" },
   { href: "contacto", label: "Contacto" },
@@ -107,7 +108,7 @@ export function SecondaryNav() {
   return (
     <nav
       id="secondary-nav"
-      className="glass glass-glow animate-in fade-in slide-in-from-bottom-2 mx-auto mt-2 grid w-11/12 grid-cols-4 gap-3 rounded-full p-2 duration-700 sm:w-3/4 sm:gap-4 sm:p-2.5"
+      className="glass glass-glow animate-in fade-in slide-in-from-bottom-2 mx-auto mt-2 grid w-11/12 grid-cols-5 gap-2 rounded-full p-2 duration-700 sm:w-3/4 sm:gap-3 sm:p-2.5"
     >
       {links.map((link) => {
         const isActive = active === link.href;

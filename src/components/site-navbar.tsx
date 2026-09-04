@@ -32,7 +32,7 @@ function EstadoLink({ onNavigate }: { onNavigate?: () => void }) {
         active ? "bg-blue text-blue-foreground" : "bg-blue/10 text-blue hover:bg-blue/20"
       }`}
     >
-      Estado
+      Estado del Turno
     </Link>
   );
 }

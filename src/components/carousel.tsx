@@ -5,7 +5,22 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const GAP = 12; // px, coincide con el gap del track
 
-export function Carousel({ images }: { images: string[] }) {
+// El box del carrusel es mucho más ancho que alto (28:9), así que el
+// object-cover por defecto (centrado) corta cabezas/pies en fotos donde el
+// sujeto no queda al centro vertical — para esos casos puntuales se ancla
+// el encuadre hacia arriba o abajo en vez de al centro.
+const IMAGE_FOCUS: Record<string, "top" | "bottom"> = {
+  "/carousel/08.webp": "bottom",
+};
+
+function focusClass(src: string) {
+  const focus = IMAGE_FOCUS[src];
+  if (focus === "bottom") return "object-bottom";
+  if (focus === "top") return "object-top";
+  return "object-center";
+}
+
+export function Carousel({ images, size = "default" }: { images: string[]; size?: "default" | "large" }) {
   const hasPeeks = images.length > 1;
   // Se clona la última imagen antes de la primera y la primera después de
   // la última, así el track puede seguir girando "hacia adelante" al llegar
@@ -113,7 +128,9 @@ export function Carousel({ images }: { images: string[] }) {
     <div className="animate-in fade-in slide-in-from-bottom-4 relative w-full overflow-hidden duration-700 md:left-1/2 md:w-screen md:-translate-x-1/2">
       <div
         ref={viewportRef}
-        className="relative mx-auto w-full max-w-[calc(64rem+9.5rem)] overflow-hidden"
+        className={`relative mx-auto w-full overflow-hidden ${
+          size === "large" ? "max-w-[calc(80rem+12rem)]" : "max-w-[calc(64rem+9.5rem)]"
+        }`}
         style={{
           maskImage: "linear-gradient(to right, transparent, black 48px, black calc(100% - 48px), transparent)",
           WebkitMaskImage: "linear-gradient(to right, transparent, black 48px, black calc(100% - 48px), transparent)",
@@ -128,13 +145,15 @@ export function Carousel({ images }: { images: string[] }) {
             <div
               key={`${src}-${i}`}
               ref={i === 0 ? slideRef : undefined}
-              className="glass glass-glow relative aspect-[64/27] w-full max-w-5xl shrink-0 overflow-hidden rounded-3xl sm:aspect-[28/9]"
+              className={`glass glass-glow relative aspect-[64/27] w-full shrink-0 overflow-hidden rounded-3xl sm:aspect-[28/9] ${
+                size === "large" ? "max-w-7xl" : "max-w-5xl"
+              }`}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={src}
                 alt=""
-                className={`h-full w-full object-cover transition-[filter,opacity] duration-500 ${
+                className={`h-full w-full object-cover ${focusClass(src)} transition-[filter,opacity] duration-500 ${
                   i - 1 === index ? "" : "opacity-80 blur-[0.5px]"
                 }`}
               />
