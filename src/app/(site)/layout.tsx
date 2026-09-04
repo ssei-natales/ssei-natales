@@ -9,16 +9,15 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
   } = await supabase.auth.getUser();
 
   let isAdmin = false;
+  const subcategorias = user ? await getSubcategorias() : [];
   if (user) {
     const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
     isAdmin = profile?.role === "admin";
   }
 
-  const subcategorias = user ? await getSubcategorias() : [];
-
   return (
     <div className="bg-ambient min-h-screen overflow-x-hidden">
-      <SiteNavbar subcategorias={subcategorias} isAuthenticated={!!user} isAdmin={isAdmin} />
+      <SiteNavbar isAuthenticated={!!user} isAdmin={isAdmin} subcategorias={subcategorias} />
       <main className="mx-auto max-w-5xl px-6 py-12 sm:px-8">{children}</main>
     </div>
   );

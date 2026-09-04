@@ -4,11 +4,11 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronDown, Menu, ShieldCheck, UserRound, X } from "lucide-react";
-import type { Subcategoria } from "@/lib/data/subcategorias";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
 import { signOut } from "@/app/login/actions";
+import type { Subcategoria } from "@/lib/data/subcategorias";
 
 function InstagramIcon({ className }: { className?: string }) {
   return (
@@ -20,127 +20,165 @@ function InstagramIcon({ className }: { className?: string }) {
   );
 }
 
-function EstadoLink({ href, children }: { href: string; children: React.ReactNode }) {
+function EstadoLink({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
-  const active = pathname === href;
+  const active = pathname === "/estado";
 
   return (
     <Link
-      href={href}
+      href="/estado"
+      onClick={onNavigate}
       className={`rounded-full px-3.5 py-1.5 text-xs font-medium tracking-wide transition-colors ${
         active ? "bg-blue text-blue-foreground" : "bg-blue/10 text-blue hover:bg-blue/20"
       }`}
     >
-      {children}
+      Estado
     </Link>
   );
 }
 
-function NavDropdown({
-  titulo,
-  basePath,
+// Enlace + botón de despliegue por separado: el texto navega directo a la
+// página índice (todas las cartillas/documentos), y la flecha abre un
+// listado rápido para saltar a una sección puntual sin pasar por el índice.
+function NavDropdownLink({
+  href,
   items,
-  openGroup,
-  setOpenGroup,
+  itemHref,
+  children,
 }: {
-  titulo: string;
-  basePath: string;
+  href: string;
   items: Subcategoria[];
-  openGroup: string | null;
-  setOpenGroup: (v: string | null) => void;
+  itemHref: (slug: string) => string;
+  children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const open = openGroup === titulo;
-  const containsActive = items.some((item) => pathname === `${basePath}/${item.slug}`);
+  const active = pathname === href || pathname.startsWith(`${href}/`);
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
 
-  return (
-    <div className="relative">
-      <button
-        type="button"
-        onClick={() => setOpenGroup(open ? null : titulo)}
-        aria-expanded={open}
-        className={`flex items-center gap-1 rounded-full px-4 py-2 text-sm font-medium transition-colors ${
-          open || containsActive ? "text-primary" : "text-foreground/80 hover:text-foreground"
+  useEffect(() => {
+    if (!open) return;
+    function onClickOutside(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    }
+    document.addEventListener("click", onClickOutside);
+    return () => document.removeEventListener("click", onClickOutside);
+  }, [open]);
+
+  if (items.length === 0) {
+    return (
+      <Link
+        href={href}
+        className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+          active ? "text-primary" : "text-foreground/80 hover:text-foreground"
         }`}
       >
-        {titulo}
-        <ChevronDown className={`size-3.5 transition-transform duration-300 ${open ? "rotate-180" : ""}`} />
-      </button>
+        {children}
+      </Link>
+    );
+  }
+
+  return (
+    <div ref={ref} className="relative">
+      <div
+        className={`flex items-center rounded-full transition-colors ${
+          active ? "text-primary" : "text-foreground/80 hover:text-foreground"
+        }`}
+      >
+        <Link href={href} className="rounded-full py-2 pl-4 text-sm font-medium">
+          {children}
+        </Link>
+        <button
+          type="button"
+          aria-label={typeof children === "string" ? `Ver secciones de ${children}` : "Ver secciones"}
+          aria-expanded={open}
+          onClick={() => setOpen((v) => !v)}
+          className="rounded-full py-2 pr-3 pl-1 hover:text-foreground"
+        >
+          <ChevronDown className={`size-3.5 transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
+        </button>
+      </div>
 
       <div
-        className={`glass-menu glass-glow absolute top-full left-1/2 z-50 mt-2 w-72 -translate-x-1/2 rounded-2xl p-2 transition-all duration-200 ${
+        className={`glass-menu glass-glow absolute top-full left-0 z-50 mt-2 max-h-[60vh] w-64 overflow-y-auto rounded-2xl p-1.5 transition-all duration-150 ${
           open ? "translate-y-0 opacity-100" : "pointer-events-none -translate-y-1 opacity-0"
         }`}
       >
-        <div className="grid gap-0.5">
-          {items.map((item) => {
-            const href = `${basePath}/${item.slug}`;
-            const active = pathname === href;
-            return (
-              <Link
-                key={item.id}
-                href={href}
-                onClick={() => setOpenGroup(null)}
-                className={`rounded-xl px-3 py-2 text-sm transition-colors ${
-                  active ? "bg-accent font-medium text-accent-foreground" : "text-foreground/80 hover:bg-accent/60 hover:text-foreground"
-                }`}
-              >
-                {item.nombre}
-              </Link>
-            );
-          })}
-        </div>
+        {items.map((item) => (
+          <Link
+            key={item.id}
+            href={itemHref(item.slug)}
+            onClick={() => setOpen(false)}
+            className="block truncate rounded-xl px-3 py-2 text-sm text-foreground/80 transition-colors hover:bg-accent/60 hover:text-foreground"
+          >
+            {item.nombre}
+          </Link>
+        ))}
       </div>
     </div>
   );
 }
 
-function MobileSection({
-  titulo,
-  basePath,
+// Mismo concepto que NavDropdownLink, adaptado al menú móvil: el enlace
+// principal navega al índice y una flecha despliega el listado debajo,
+// indentado, sin salir de la tarjeta del menú.
+function MobileNavSection({
+  href,
   items,
+  itemHref,
   onNavigate,
+  children,
 }: {
-  titulo: string;
-  basePath: string;
+  href: string;
   items: Subcategoria[];
+  itemHref: (slug: string) => string;
   onNavigate: () => void;
+  children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const [expanded, setExpanded] = useState(false);
-  const containsActive = items.some((item) => pathname === `${basePath}/${item.slug}`);
+  const active = pathname === href || pathname.startsWith(`${href}/`);
+  const [open, setOpen] = useState(false);
 
   return (
     <div>
-      <button
-        type="button"
-        onClick={() => setExpanded((v) => !v)}
-        aria-expanded={expanded}
-        className={`flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
-          expanded || containsActive ? "text-primary" : "text-foreground/80 hover:bg-accent/60"
-        }`}
-      >
-        {titulo}
-        <ChevronDown className={`size-3.5 transition-transform duration-300 ${expanded ? "rotate-180" : ""}`} />
-      </button>
-      {expanded && (
-        <div className="mb-1 ml-2 grid gap-0.5 border-l border-border/60 pl-2">
-          {items.map((item) => {
-            const href = `${basePath}/${item.slug}`;
-            const active = pathname === href;
-            return (
-              <Link
-                key={item.id}
-                href={href}
-                onClick={onNavigate}
-                className={`rounded-lg px-3 py-2 text-sm transition-colors ${
-                  active ? "bg-accent font-medium text-accent-foreground" : "text-foreground/70 hover:bg-accent/60"
-                }`}
-              >
-                {item.nombre}
-              </Link>
-            );
-          })}
+      <div className="flex items-center gap-1">
+        <Link
+          href={href}
+          onClick={onNavigate}
+          className={`flex-1 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
+            active ? "text-primary" : "text-foreground/80 hover:bg-accent/60"
+          }`}
+        >
+          {children}
+        </Link>
+        {items.length > 0 && (
+          <button
+            type="button"
+            aria-label={typeof children === "string" ? `Ver secciones de ${children}` : "Ver secciones"}
+            aria-expanded={open}
+            onClick={() => setOpen((v) => !v)}
+            className="rounded-xl p-2.5 text-foreground/60 hover:bg-accent/60"
+          >
+            <ChevronDown className={`size-4 transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
+          </button>
+        )}
+      </div>
+      {items.length > 0 && (
+        <div className={`grid transition-all duration-200 ${open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}>
+          <div className="overflow-hidden">
+            <div className="mt-0.5 ml-3 flex flex-col gap-0.5 border-l border-border/60 py-1 pl-3">
+              {items.map((item) => (
+                <Link
+                  key={item.id}
+                  href={itemHref(item.slug)}
+                  onClick={onNavigate}
+                  className="truncate rounded-lg px-2 py-1.5 text-sm text-foreground/70 transition-colors hover:bg-accent/60 hover:text-foreground"
+                >
+                  {item.nombre}
+                </Link>
+              ))}
+            </div>
+          </div>
         </div>
       )}
     </div>
@@ -148,15 +186,15 @@ function MobileSection({
 }
 
 function MobileMenu({
+  isAdmin,
   cartillas,
   documentos,
-  isAdmin,
   open,
   setOpen,
 }: {
+  isAdmin: boolean;
   cartillas: Subcategoria[];
   documentos: Subcategoria[];
-  isAdmin: boolean;
   open: boolean;
   setOpen: (v: boolean) => void;
 }) {
@@ -174,12 +212,15 @@ function MobileMenu({
         }`}
       >
         <div className="flex flex-col gap-1">
-          <div className="flex flex-wrap gap-2 px-1 pb-2">
-            <EstadoLink href="/estado-cartillas">Estado Cartillas</EstadoLink>
-            <EstadoLink href="/estado-era">Estado ERA</EstadoLink>
+          <div className="px-1 pb-2">
+            <EstadoLink onNavigate={close} />
           </div>
-          <MobileSection titulo="Cartillas" basePath="/cartillas" items={cartillas} onNavigate={close} />
-          <MobileSection titulo="Documentos" basePath="/documentos" items={documentos} onNavigate={close} />
+          <MobileNavSection href="/cartillas" items={cartillas} itemHref={(slug) => `/cartillas/${slug}`} onNavigate={close}>
+            Cartillas
+          </MobileNavSection>
+          <MobileNavSection href="/documentos" items={documentos} itemHref={(slug) => `/documentos/${slug}`} onNavigate={close}>
+            Documentos
+          </MobileNavSection>
           {isAdmin && (
             <Link
               href="/admin"
@@ -215,24 +256,22 @@ function MobileMenu({
 }
 
 export function SiteNavbar({
-  subcategorias,
   isAuthenticated,
   isAdmin,
+  subcategorias,
 }: {
-  subcategorias: Subcategoria[];
   isAuthenticated: boolean;
   isAdmin: boolean;
+  subcategorias: Subcategoria[];
 }) {
-  const cartillas = subcategorias.filter((s) => s.tipo === "cartilla");
-  const documentos = subcategorias.filter((s) => s.tipo === "documento");
-  const [openGroup, setOpenGroup] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const navRef = useRef<HTMLElement>(null);
+  const cartillas = subcategorias.filter((s) => s.tipo === "cartilla");
+  const documentos = subcategorias.filter((s) => s.tipo === "documento");
 
   useEffect(() => {
     function onClickOutside(e: MouseEvent) {
       if (navRef.current && !navRef.current.contains(e.target as Node)) {
-        setOpenGroup(null);
         setMobileOpen(false);
       }
     }
@@ -267,12 +306,15 @@ export function SiteNavbar({
         {isAuthenticated ? (
           <>
             <nav className="hidden items-center gap-1 lg:flex">
-              <div className="mr-1 flex items-center gap-1.5 border-r border-border/60 pr-3">
-                <EstadoLink href="/estado-cartillas">Estado Cartillas</EstadoLink>
-                <EstadoLink href="/estado-era">Estado ERA</EstadoLink>
+              <div className="mr-1 border-r border-border/60 pr-3">
+                <EstadoLink />
               </div>
-              <NavDropdown titulo="Cartillas" basePath="/cartillas" items={cartillas} openGroup={openGroup} setOpenGroup={setOpenGroup} />
-              <NavDropdown titulo="Documentos" basePath="/documentos" items={documentos} openGroup={openGroup} setOpenGroup={setOpenGroup} />
+              <NavDropdownLink href="/cartillas" items={cartillas} itemHref={(slug) => `/cartillas/${slug}`}>
+                Cartillas
+              </NavDropdownLink>
+              <NavDropdownLink href="/documentos" items={documentos} itemHref={(slug) => `/documentos/${slug}`}>
+                Documentos
+              </NavDropdownLink>
               {isAdmin && (
                 <Button variant="ghost" size="sm" className="ml-1 gap-1.5" render={<Link href="/admin" />} nativeButton={false}>
                   <ShieldCheck className="size-3.5" />
@@ -292,13 +334,7 @@ export function SiteNavbar({
               </div>
             </nav>
 
-            <MobileMenu
-              cartillas={cartillas}
-              documentos={documentos}
-              isAdmin={isAdmin}
-              open={mobileOpen}
-              setOpen={setMobileOpen}
-            />
+            <MobileMenu isAdmin={isAdmin} cartillas={cartillas} documentos={documentos} open={mobileOpen} setOpen={setMobileOpen} />
           </>
         ) : (
           <div className="flex shrink-0 items-center gap-1">

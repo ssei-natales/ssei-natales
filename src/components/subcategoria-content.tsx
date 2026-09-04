@@ -1,6 +1,7 @@
 import { ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toDriveEmbedUrl } from "@/lib/drive-embed";
+import { EmbedJumpNav } from "@/components/embed-jump-nav";
 import type { Link as LinkRow, Subcategoria } from "@/lib/data/subcategorias";
 
 function LinkButton({ link, i }: { link: LinkRow; i: number }) {
@@ -22,7 +23,8 @@ function LinkButton({ link, i }: { link: LinkRow; i: number }) {
 function EmbedBlock({ link, i }: { link: LinkRow; i: number }) {
   return (
     <div
-      className="animate-in fade-in slide-in-from-bottom-2 duration-500"
+      id={`embed-${link.id}`}
+      className="animate-in fade-in slide-in-from-bottom-2 scroll-mt-36 duration-500"
       style={{ animationDelay: `${i * 60}ms`, animationFillMode: "backwards" }}
     >
       <div className="mb-3 flex items-baseline gap-2">
@@ -78,31 +80,43 @@ function ItemsBlock({ links }: { links: LinkRow[] }) {
 export function SubcategoriaContent({ subcategoria, links }: { subcategoria: Subcategoria; links: LinkRow[] }) {
   const sinGrupo = links.filter((l) => !l.grupo);
   const grupos = [...new Set(links.filter((l) => l.grupo).map((l) => l.grupo as string))];
+  // El orden real en pantalla es: sin grupo primero, luego cada grupo en el
+  // orden en que aparece — no el orden crudo de `links` — así que la barra
+  // de salto debe seguir esta misma secuencia, no la de la consulta original.
+  const renderedOrder = [...sinGrupo, ...grupos.flatMap((grupo) => links.filter((l) => l.grupo === grupo))];
+  const embeds = renderedOrder.filter((l) => l.es_embed);
+  const showJumpNav = embeds.length >= 2;
 
   return (
-    <div className="glass glass-glow animate-in fade-in slide-in-from-bottom-2 mt-8 rounded-3xl p-8 duration-500 sm:p-10">
-      <p className="text-xs font-medium tracking-[0.3em] text-primary uppercase">
-        {subcategoria.tipo === "cartilla" ? "Cartillas" : "Documentos"}
-      </p>
-      <h1 className="mt-2 font-[family-name:var(--font-brand)] text-2xl">{subcategoria.nombre}</h1>
-      <div className="mt-4 h-px w-16 bg-gradient-to-r from-primary via-blue to-transparent" />
+    <>
+      {showJumpNav && <EmbedJumpNav embeds={embeds} />}
 
-      {links.length === 0 ? (
-        <p className="mt-8 text-sm text-muted-foreground">Todavía no hay nada acá.</p>
-      ) : (
-        <div className="mt-8 space-y-8">
-          {sinGrupo.length > 0 && <ItemsBlock links={sinGrupo} />}
-          {sinGrupo.length > 0 && grupos.length > 0 && (
-            <div className="h-px w-full bg-gradient-to-r from-primary via-blue to-transparent" />
-          )}
-          {grupos.map((grupo) => (
-            <div key={grupo}>
-              {grupos.length > 1 && <h2 className="mb-3 text-sm font-medium text-muted-foreground">{grupo}</h2>}
-              <ItemsBlock links={links.filter((l) => l.grupo === grupo)} />
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
+      <div
+        className={`glass glass-glow animate-in fade-in slide-in-from-bottom-2 rounded-3xl p-8 duration-500 sm:p-10 ${showJumpNav ? "mt-24" : "mt-8"}`}
+      >
+        <p className="text-xs font-medium tracking-[0.3em] text-primary uppercase">
+          {subcategoria.tipo === "cartilla" ? "Cartillas" : "Documentos"}
+        </p>
+        <h1 className="mt-2 font-[family-name:var(--font-brand)] text-2xl">{subcategoria.nombre}</h1>
+        <div className="mt-4 h-px w-16 bg-gradient-to-r from-primary via-blue to-transparent" />
+
+        {links.length === 0 ? (
+          <p className="mt-8 text-sm text-muted-foreground">Todavía no hay nada acá.</p>
+        ) : (
+          <div className="mt-8 space-y-8">
+            {sinGrupo.length > 0 && <ItemsBlock links={sinGrupo} />}
+            {sinGrupo.length > 0 && grupos.length > 0 && (
+              <div className="h-px w-full bg-gradient-to-r from-primary via-blue to-transparent" />
+            )}
+            {grupos.map((grupo) => (
+              <div key={grupo}>
+                {grupos.length > 1 && <h2 className="mb-3 text-sm font-medium text-muted-foreground">{grupo}</h2>}
+                <ItemsBlock links={links.filter((l) => l.grupo === grupo)} />
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </>
   );
 }
